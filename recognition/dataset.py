@@ -12,12 +12,13 @@ from . import augmentation as aug
 # TrainingSetLabeled:
 # Labeled Training Dataset
 class TrainingSetLabeled(torch.utils.data.Dataset):
-    def __init__(self, files_dir, h=160, w=160,transform=True):
+    def __init__(self, files_dir, h=160, w=160,transform=True, class_idx=None):
         self.imgs = []
         self.labels = []
         self.height = h
         self.width = w
         self.num_classes = 0
+        self.class_idx = class_idx
         self.image_loader(files_dir, h, w)
         if transform:
             self.transformers = aug.face_augmentations()
@@ -44,6 +45,8 @@ class TrainingSetLabeled(torch.utils.data.Dataset):
             ids[character].append(img_path)
         
         for id in sorted(ids.keys()):
+            if not self.class_idx is None and id != self.class_idx:
+                continue
             imgs = ids[id]
             for img in imgs:
                 my_img = cv2.imread(img)
