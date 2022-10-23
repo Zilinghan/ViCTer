@@ -446,21 +446,21 @@ if __name__ == '__main__':
     start = time_sync()
     # (1) For Test Speed:
     # Load the saved model
-    fr_model = torch.load(opt.model_folder)
-    fr_model.classify = False
-    LabeledTrainSet = TrainingSetLabeled(opt.face_folder, transform=False)
-    num_classes = LabeledTrainSet.get_num_classes()
-    LOGGER.info(f"Number of classes is : {num_classes}")
-    LabeledTrainLoader = DataLoader(LabeledTrainSet, batch_size=8, shuffle=False)
-    embedding_pool = EmbeddingPool(LabeledTrainLoader, fr_model, get_device(), threshold=1.1, threshold_high=1.35)
+    # fr_model = torch.load(opt.model_folder)
+    # fr_model.classify = False
+    # LabeledTrainSet = TrainingSetLabeled(opt.face_folder, transform=False)
+    # num_classes = LabeledTrainSet.get_num_classes()
+    # LOGGER.info(f"Number of classes is : {num_classes}")
+    # LabeledTrainLoader = DataLoader(LabeledTrainSet, batch_size=8, shuffle=False)
+    # embedding_pool = EmbeddingPool(LabeledTrainLoader, fr_model, get_device(), threshold=1.1, threshold_high=1.35)
     # (2) For Real Case:
     # Train from the data
-#     fr_model, embedding_pool, num_classes = train(opt.source, opt.face_folder)
-#     torch.save(fr_model, opt.model_folder)
-#     LOGGER.info(f"The model is saved to {opt.model_folder}")
-#     end = time_sync()
-#     LOGGER.info(f"Total time for training is: {end-start:.3f}s")
-#     start = time_sync()
+    fr_model, embedding_pool, num_classes = train(opt.source, opt.face_folder)
+    torch.save(fr_model, opt.model_folder)
+    LOGGER.info(f"The model is saved to {opt.model_folder}")
+    end = time_sync()
+    LOGGER.info(f"Total time for training is: {end-start:.3f}s")
+    start = time_sync()
     with torch.no_grad():
         detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
         detect_no_track(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
