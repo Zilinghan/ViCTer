@@ -9,6 +9,22 @@ import warnings
 import numpy as np
 from pathlib import Path
 from facenet_pytorch import MTCNN
+FILE = Path(__file__).resolve()
+ROOT = FILE.parents[0]  # yolov5 strongsort root directory
+WEIGHTS = ROOT / 'weights'
+
+if str(ROOT) not in sys.path:
+    sys.path.append(str(ROOT))  # add ROOT to PATH
+if str(ROOT / 'track' / 'yolov5') not in sys.path:
+    sys.path.append(str(ROOT / 'track' / 'yolov5'))  # add yolov5 ROOT to PATH
+if str(ROOT / 'track' / 'trackers' / 'strong_sort') not in sys.path:
+    sys.path.append(str(ROOT / 'track' / 'trackers' / 'strong_sort'))  # add strong_sort ROOT to PATH
+if str(ROOT / 'track' / 'trackers' / 'ocsort') not in sys.path:
+    sys.path.append(str(ROOT / 'track' / 'trackers' / 'ocsort'))  # add strong_sort ROOT to PATH
+if str(ROOT / 'trackers' / 'track' / 'strong_sort' / 'deep' / 'reid' / 'torchreid') not in sys.path:
+    sys.path.append(str(ROOT / 'track' / 'trackers' / 'strong_sort' / 'deep' / 'reid' / 'torchreid'))  # add strong_sort ROOT to PATH
+ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
+
 from utils.dataloader import LoadVideos
 from utils.trackerloader import create_tracker
 from track.yolov5.models.common import DetectMultiBackend
@@ -26,11 +42,11 @@ os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
 # Get the root folder path
-ROOT = Path.cwd()
-WEIGHTS = ROOT / 'weights'
-if str(ROOT) not in sys.path:
-    sys.path.append(str(ROOT))  # add ROOT to PATH
-ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
+# ROOT = Path.cwd()
+# WEIGHTS = ROOT / 'weights'
+# if str(ROOT) not in sys.path:
+#     sys.path.append(str(ROOT))  # add ROOT to PATH
+# ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 # Colors for visualization
 np.random.seed(100)
