@@ -1,6 +1,5 @@
 import os
 import sys
-sys.path.insert(0, './track/yolov5')
 import cv2
 import torch
 import argparse
@@ -17,6 +16,8 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 if str(ROOT / 'track' / 'yolov5') not in sys.path:
     sys.path.append(str(ROOT / 'track' / 'yolov5'))  # add yolov5 ROOT to PATH
+if str(ROOT / 'track' / 'trackers') not in sys.path:
+    sys.path.append(str(ROOT / 'track' / 'trackers')) 
 if str(ROOT / 'track' / 'trackers' / 'strong_sort') not in sys.path:
     sys.path.append(str(ROOT / 'track' / 'trackers' / 'strong_sort'))  # add strong_sort ROOT to PATH
 if str(ROOT / 'track' / 'trackers' / 'ocsort') not in sys.path:
@@ -25,8 +26,8 @@ if str(ROOT / 'trackers' / 'track' / 'strong_sort' / 'deep' / 'reid' / 'torchrei
     sys.path.append(str(ROOT / 'track' / 'trackers' / 'strong_sort' / 'deep' / 'reid' / 'torchreid'))  # add strong_sort ROOT to PATH
 ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
-from utils.dataloader import LoadVideos
-from utils.trackerloader import create_tracker
+from loader.dataloader import LoadVideos
+from loader.trackerloader import create_tracker
 from track.yolov5.models.common import DetectMultiBackend
 from track.yolov5.utils.general import (LOGGER, check_img_size, non_max_suppression, xyxy2xywh, increment_path)
 from track.yolov5.utils.torch_utils import select_device, time_sync
