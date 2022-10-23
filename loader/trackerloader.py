@@ -7,7 +7,7 @@ def create_tracker(tracker_type, appearance_descriptor_weights, device, half):
     if tracker_type == 'strongsort':
         # initialize StrongSORT
         cfg = get_config()
-        cfg.merge_from_file('strongsort_config/strong_sort.yaml')
+        cfg.merge_from_file('loader/strongsort_config/strong_sort.yaml')
 
         strongsort = StrongSORT(
             appearance_descriptor_weights,
@@ -25,7 +25,7 @@ def create_tracker(tracker_type, appearance_descriptor_weights, device, half):
         return strongsort
     elif tracker_type == 'ocsort':
         ocsort = OCSort(
-            det_thresh=0.45,
+            det_thresh=0.05,
             iou_threshold=0.2,
             use_byte=False 
         )

@@ -8,6 +8,7 @@ import warnings
 import numpy as np
 from pathlib import Path
 from facenet_pytorch import MTCNN
+from torch.utils.data import DataLoader
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # yolov5 strongsort root directory
 WEIGHTS = ROOT / 'weights'
@@ -16,8 +17,8 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 if str(ROOT / 'track' / 'yolov5') not in sys.path:
     sys.path.append(str(ROOT / 'track' / 'yolov5'))  # add yolov5 ROOT to PATH
-if str(ROOT / 'track') not in sys.path:
-    sys.path.append(str(ROOT / 'track' / 'trackers')) 
+if str(ROOT / 'track' / 'trackers') not in sys.path:
+    sys.path.append(str(ROOT / 'track')) 
 if str(ROOT / 'track' / 'trackers' / 'strong_sort') not in sys.path:
     sys.path.append(str(ROOT / 'track' / 'trackers' / 'strong_sort'))  # add strong_sort ROOT to PATH
 if str(ROOT / 'track' / 'trackers' / 'ocsort') not in sys.path:
@@ -28,13 +29,14 @@ ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 from loader.dataloader import LoadVideos
 from loader.trackerloader import create_tracker
+from loader.plots import Annotator
 from yolov5.models.common import DetectMultiBackend
 from yolov5.utils.general import (LOGGER, check_img_size, non_max_suppression, xyxy2xywh, increment_path)
 from yolov5.utils.torch_utils import select_device, time_sync
-from yolov5.utils.plots import Annotator
 from recognition.train import train, get_device
-from recognition.dataset import face_extraction, recognize
+from recognition.dataset import TrainingSetLabeled, TrainingSetUnlabeled, face_extraction, recognize
 from recognition.draw import post_processing, event_plot, event_plot_setup, event_plot
+from recognition.embedding import EmbeddingPool
 warnings.filterwarnings('ignore')
 # Limit the number of cpus used by high performance libraries
 os.environ["OMP_NUM_THREADS"] = "1"
@@ -269,7 +271,7 @@ def detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax):
                             face_logits_idx += 1
                     # For each tracked person, update their appearing frames
                     for j, (output, conf) in enumerate(zip(outputs, confs)):
-                        person_idx = output[4]
+                        person_idx = int(output[4])
                         if person_idx in appear_dict:
                             cur_face_index = len(appear_dict[person_idx]) - 1
                             if appear_dict[person_idx][cur_face_index]['frame_appended'] == True:
@@ -297,7 +299,7 @@ def detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax):
                             c = int(output[5])
                             label = f'{person_idx} {names[c]} {conf:.2f}'
                             color_idx = person_idx * len(appear_dict[person_idx]) * 5 % len(COLORS_PEOPLE)
-                            annotator.mask_label(bboxes, label, color=tuple(COLORS_PEOPLE[color_idx]))
+                            annotator.mask_label(bboxes, label, color=tuple(COLORS_PEOPLE[int(color_idx)]))
             # else:
             #     tracker.increment_ages()
 
@@ -444,21 +446,21 @@ if __name__ == '__main__':
     start = time_sync()
     # (1) For Test Speed:
     # Load the saved model
-#     fr_model = torch.load(opt.model_folder)
-#     fr_model.classify = False
-#     LabeledTrainSet = TrainingSetLabeled(opt.face_folder, transform=False)
-#     num_classes = LabeledTrainSet.get_num_classes()
-#     LOGGER.info(f"Number of classes is : {num_classes}")
-#     LabeledTrainLoader = DataLoader(LabeledTrainSet, batch_size=8, shuffle=False)
-#     embedding_pool = EmbeddingPool(LabeledTrainLoader, fr_model, get_device(), threshold=1.1, threshold_high=1.28)
+    fr_model = torch.load(opt.model_folder)
+    fr_model.classify = False
+    LabeledTrainSet = TrainingSetLabeled(opt.face_folder, transform=False)
+    num_classes = LabeledTrainSet.get_num_classes()
+    LOGGER.info(f"Number of classes is : {num_classes}")
+    LabeledTrainLoader = DataLoader(LabeledTrainSet, batch_size=8, shuffle=False)
+    embedding_pool = EmbeddingPool(LabeledTrainLoader, fr_model, get_device(), threshold=1.1, threshold_high=1.35)
     # (2) For Real Case:
     # Train from the data
-    fr_model, embedding_pool, num_classes = train(opt.source, opt.face_folder)
-    torch.save(fr_model, opt.model_folder)
-    LOGGER.info(f"The model is saved to {opt.model_folder}")
-    end = time_sync()
-    LOGGER.info(f"Total time for training is: {end-start:.3f}s")
-    start = time_sync()
+#     fr_model, embedding_pool, num_classes = train(opt.source, opt.face_folder)
+#     torch.save(fr_model, opt.model_folder)
+#     LOGGER.info(f"The model is saved to {opt.model_folder}")
+#     end = time_sync()
+#     LOGGER.info(f"Total time for training is: {end-start:.3f}s")
+#     start = time_sync()
     with torch.no_grad():
         detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
         detect_no_track(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
