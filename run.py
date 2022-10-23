@@ -16,7 +16,7 @@ if str(ROOT) not in sys.path:
     sys.path.append(str(ROOT))  # add ROOT to PATH
 if str(ROOT / 'track' / 'yolov5') not in sys.path:
     sys.path.append(str(ROOT / 'track' / 'yolov5'))  # add yolov5 ROOT to PATH
-if str(ROOT / 'track' / 'trackers') not in sys.path:
+if str(ROOT / 'track') not in sys.path:
     sys.path.append(str(ROOT / 'track' / 'trackers')) 
 if str(ROOT / 'track' / 'trackers' / 'strong_sort') not in sys.path:
     sys.path.append(str(ROOT / 'track' / 'trackers' / 'strong_sort'))  # add strong_sort ROOT to PATH

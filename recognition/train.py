@@ -4,7 +4,7 @@ from torch import nn
 from torch.nn import functional as F
 from torch.nn import TripletMarginLoss
 from torch.optim.lr_scheduler import LambdaLR
-from track.yolov5.utils.general import LOGGER
+from yolov5.utils.general import LOGGER
 from torch.utils.data import DataLoader
 from facenet_pytorch import InceptionResnetV1
 from recognition.dataset import TrainingSetLabeled, TrainingSetUnlabeled
