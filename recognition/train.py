@@ -91,7 +91,7 @@ def train_SSL(model, labeled_trainloader, unlabeled_trainloader, num_epochs, num
     params_1x = [param for name, param in model.named_parameters() if name not in ["logits.weight", "logits.bias"]]
     grouped_parameters = [
         {'params': params_1x, 'lr': learning_rate},
-        {'params': model.logits.parameters(), 'lr': learning_rate*9}
+        {'params': model.logits.parameters(), 'lr': learning_rate*180}
     ]
     optimizer = torch.optim.SGD(grouped_parameters, lr=learning_rate, weight_decay=0.001)
     scheduler = get_cosine_schedule_with_warmup(optimizer, num_warmup_steps=0, num_training_steps=num_epochs*num_iters)
@@ -162,7 +162,7 @@ def train_SSL(model, labeled_trainloader, unlabeled_trainloader, num_epochs, num
     model.classify = False
     params_1x = [param for name, param in model.named_parameters() if name not in ["logits.weight", "logits.bias"]]
     grouped_parameters = [
-        {'params': params_1x, 'lr': learning_rate},
+        {'params': params_1x, 'lr': learning_rate*20},
         {'params': model.logits.parameters(), 'lr': 0}
     ]
     optimizer = torch.optim.SGD(grouped_parameters, lr=learning_rate, weight_decay=0.001)
@@ -249,7 +249,7 @@ def train(source, face_folder):
     nn.init.xavier_uniform_(fr_model.logits.weight)
     # Tune the face recognition network using semi-supervised training + triplet loss
     LOGGER.info("Start training the recognition network......")
-    train_SSL(fr_model, LabeledTrainLoader, UnlabeledTrainLoader, num_epochs=10, num_iters=40, learning_rate=3.0e-3, threshold=0.99)
+    train_SSL(fr_model, LabeledTrainLoader, UnlabeledTrainLoader, num_epochs=10, num_iters=40, learning_rate=1.5e-4, threshold=0.99)
     # Return the embedding pool for the labeled images, which is used to match faces according to embedding similarities
     fr_model.classify = False
     LabeledTrainSet = TrainingSetLabeled(face_folder, transform=False)
