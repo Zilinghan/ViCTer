@@ -100,7 +100,6 @@ def get_csv_files(filePath):
 
 def printable_to_seconds(t):
     hh, mm, ss, ms = [int(i) for i in t.split(':')]
-    print(hh*3600+mm*60+ss+(ms/(100.0)))
     return hh*3600+mm*60+ss+(ms/(100.0))
 
 def read_labels(csv_path, total_sec):
