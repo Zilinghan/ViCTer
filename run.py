@@ -28,10 +28,10 @@ ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 from loader.dataloader import LoadVideos
 from loader.trackerloader import create_tracker
-from track.yolov5.models.common import DetectMultiBackend
-from track.yolov5.utils.general import (LOGGER, check_img_size, non_max_suppression, xyxy2xywh, increment_path)
-from track.yolov5.utils.torch_utils import select_device, time_sync
-from track.yolov5.utils.plots import Annotator
+from yolov5.models.common import DetectMultiBackend
+from yolov5.utils.general import (LOGGER, check_img_size, non_max_suppression, xyxy2xywh, increment_path)
+from yolov5.utils.torch_utils import select_device, time_sync
+from yolov5.utils.plots import Annotator
 from recognition.train import train, get_device
 from recognition.dataset import face_extraction, recognize
 from recognition.draw import post_processing, event_plot, event_plot_setup, event_plot
