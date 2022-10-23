@@ -39,3 +39,11 @@ class EmbeddingPool:
             else: 
                 min_class = -2 # not sure: unseen person or unclear person
         return min_class
+
+    def get_min_dist(self, embedding):
+        min_dist = 999999
+        for yi in self.embedding_dict:
+            curr_dist = torch.mean(torch.tensor([(e1-embedding).norm().item() for e1 in self.embedding_dict[yi]])).item()
+            if curr_dist < min_dist:
+                min_dist = curr_dist
+        return min_dist
