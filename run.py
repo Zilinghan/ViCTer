@@ -31,7 +31,7 @@ from loader.dataloader import LoadVideos
 from loader.trackerloader import create_tracker
 from loader.plots import Annotator
 from yolov5.models.common import DetectMultiBackend
-from yolov5.utils.general import (LOGGER, check_img_size, non_max_suppression, xyxy2xywh, increment_path)
+from yolov5.utils.general import (check_img_size, non_max_suppression, xyxy2xywh, increment_path)
 from yolov5.utils.torch_utils import select_device, time_sync
 from recognition.train import train, get_device
 from recognition.dataset import TrainingSetLabeled, TrainingSetUnlabeled, face_extraction, recognize
@@ -55,7 +55,7 @@ os.environ["NUMEXPR_NUM_THREADS"] = "1"
 np.random.seed(100)
 COLORS_PEOPLE = np.random.randint(0, 255, size=(2000, 3), dtype="uint8")
 COLORS_FACE = np.random.randint(0, 255, size=(100, 3), dtype="uint8")
-LOGGER.info("Module Imported Successfully!")
+print("Module Imported Successfully!")
 
 def detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax):
     '''
@@ -329,10 +329,10 @@ def detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax):
                 vid_writer.write(im0)
         t5 = time_sync()
         dt[3] += t5 - t4
-        LOGGER.info(f'{s}Done. Load:({t2-t1:.3f}s), YOLO:({t3 - t2:.3f}s), Tracking:({t5 - t4:.3f}s)')
+        print(f'{s}Done. Load:({t2-t1:.3f}s), YOLO:({t3 - t2:.3f}s), Tracking:({t5 - t4:.3f}s)')
     # Print results
     t = tuple(x / seen * 1E3 for x in dt)  # speeds per image
-    LOGGER.info(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS, %.1fms deep sort update per image at shape {(1, 3, *imgsz)}' % t)
+    print(f'Speed: %.1fms pre-process, %.1fms inference, %.1fms NMS, %.1fms deep sort update per image at shape {(1, 3, *imgsz)}' % t)
     if save_vid:
         print('Videos saved to %s' % save_path)
         if platform == 'darwin':  # MacOS
@@ -396,7 +396,7 @@ def detect_no_track(opt, fr_model, embedding_pool, num_classes, save_dir, ax):
                         if face_class >= 0:
                             face_time_slots[face_class].extend([frame_idx*opt.batchsize*opt.stride + i * opt.stride + ii for ii in range(opt.stride)])
                     face_idx += 1       
-        LOGGER.info(f'{s}Done.')
+        print(f'{s}Done.')
     event_plot(ax, post_processing({}, face_time_slots, num_classes, 0), opt.source, opt.label_folder, idx=2)
     
     # draw_screentimes(after_processing_2({}, face_time_slots, num_classes, 0), total_frames, save_dir, 'output_notrack.jpg')
@@ -450,21 +450,21 @@ if __name__ == '__main__':
     # fr_model.classify = False
     # LabeledTrainSet = TrainingSetLabeled(opt.face_folder, transform=False)
     # num_classes = LabeledTrainSet.get_num_classes()
-    # LOGGER.info(f"Number of classes is : {num_classes}")
+    # print(f"Number of classes is : {num_classes}")
     # LabeledTrainLoader = DataLoader(LabeledTrainSet, batch_size=8, shuffle=False)
     # embedding_pool = EmbeddingPool(LabeledTrainLoader, fr_model, get_device(), threshold=1.1, threshold_high=1.35)
     # (2) For Real Case:
     # Train from the data
     fr_model, embedding_pool, num_classes = train(opt.source, opt.face_folder)
     torch.save(fr_model, opt.model_folder)
-    LOGGER.info(f"The model is saved to {opt.model_folder}")
+    print(f"The model is saved to {opt.model_folder}")
     end = time_sync()
-    LOGGER.info(f"Total time for training is: {end-start:.3f}s")
+    print(f"Total time for training is: {end-start:.3f}s")
     start = time_sync()
     with torch.no_grad():
         detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
         detect_no_track(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
     end = time_sync()
-    LOGGER.info(f"Total time for tracking and detection is: {end-start:.3f}s")
+    print(f"Total time for tracking and detection is: {end-start:.3f}s")
     ax.figure.savefig(str(save_dir/'output.jpg'))
-    LOGGER.info(f"Time slots figure is saved to {str(save_dir/'output.jpg')}")
+    print(f"Time slots figure is saved to {str(save_dir/'output.jpg')}")

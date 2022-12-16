@@ -4,7 +4,6 @@ from torch import nn
 from torch.nn import functional as F
 from torch.nn import TripletMarginLoss
 from torch.optim.lr_scheduler import LambdaLR
-from yolov5.utils.general import LOGGER
 from torch.utils.data import DataLoader
 from facenet_pytorch import InceptionResnetV1
 from recognition.dataset import TrainingSetLabeled, TrainingSetUnlabeled
@@ -154,7 +153,7 @@ def train_SSL(model, labeled_trainloader, unlabeled_trainloader, num_epochs, num
             optimizer.step()
             scheduler.step()
             model.zero_grad()
-        LOGGER.info(f'Semi-supervised Training Epoch: [{epoch+1}/{num_epochs}]')
+        print(f'Semi-supervised Training Epoch: [{epoch+1}/{num_epochs}]')
     
     
     # Triplet Loss Fine-tune
@@ -214,7 +213,7 @@ def train_SSL(model, labeled_trainloader, unlabeled_trainloader, num_epochs, num
         optimizer.step()
         scheduler.step()
         model.zero_grad()
-        LOGGER.info(f'Triplet Training Epoch: [{epoch+1}/{20}]')
+        print(f'Triplet Training Epoch: [{epoch+1}/{20}]')
         
 
 
@@ -230,11 +229,11 @@ def train(source, face_folder):
     NOTE: All images in the training set are in the RGB format!
     '''
     # Load small labeled dataset provided by the user
-    LOGGER.info("Loading the labeled dataset......")
+    print("Loading the labeled dataset......")
     LabeledTrainSet = TrainingSetLabeled(face_folder)
     LabeledTrainLoader = DataLoader(LabeledTrainSet, batch_size=8, shuffle=True)
     # Load unlabeled dataset obtained from the video
-    LOGGER.info("Loading the unlabeled dataset......")
+    print("Loading the unlabeled dataset......")
     UnlabeledTrainSet = TrainingSetUnlabeled(source, "data", num_images=2048)
     UnlabeledTrainLoader = DataLoader(UnlabeledTrainSet, batch_size=8*10, shuffle=True)
     # Get the number of characters of interest
@@ -248,7 +247,7 @@ def train(source, face_folder):
     # Initialize the weight-parameters of the classification 
     nn.init.xavier_uniform_(fr_model.logits.weight)
     # Tune the face recognition network using semi-supervised training + triplet loss
-    LOGGER.info("Start training the recognition network......")
+    print("Start training the recognition network......")
     train_SSL(fr_model, LabeledTrainLoader, UnlabeledTrainLoader, num_epochs=10, num_iters=40, learning_rate=1.5e-4, threshold=0.99)
     # Return the embedding pool for the labeled images, which is used to match faces according to embedding similarities
     fr_model.classify = False

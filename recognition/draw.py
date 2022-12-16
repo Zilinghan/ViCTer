@@ -111,7 +111,6 @@ def read_labels(csv_path, total_sec):
         start, end = df.iloc[i, 0], df.iloc[i, 1]
         start_t = printable_to_seconds(start)
         end_t = printable_to_seconds(end)
-        print(start_t, end_t)
         ax.xaxis.set_visible(True)
         ax.yaxis.set_visible(True)
         ax.set_xlim(0, total_sec)
@@ -177,7 +176,7 @@ def event_plot(ax, screentime, video_path, label_path, idx=1):
                 t2[i] = True
         intersection = [t1[i] and t2[i] for i in range(int(total_frames))]
         union = [t1[i] or t2[i] for i in range(int(total_frames))]
-        return sum(intersection)/sum(union)
+        return sum(intersection)/sum(union), sum(intersection), sum(union)
         
 
     colors = ['deepskyblue', 'violet', 'limegreen', 'tomato', 'gold', 'pink']
@@ -195,8 +194,14 @@ def event_plot(ax, screentime, video_path, label_path, idx=1):
     # Read the labels
     csv_files = get_csv_files(label_path)
     ious = []
+    intersection_count = 0
+    union_count = 0
     for i, file in zip(screentime, csv_files):
         l1 = _format_convert(screentime[i])
         l2 = pd.read_csv(os.path.join(label_path, file))
-        ious.append(_compute_iou(l1, l2, total_frames, fps))
-    print("IOU is: ", ious)
+        iou, intersection, union = _compute_iou(l1, l2, total_frames, fps)
+        ious.append(iou)
+        intersection_count += intersection
+        union_count += union
+    print(f"Average IoU is {intersection_count/union_count}")
+    print("IoUs are: ", ious)
