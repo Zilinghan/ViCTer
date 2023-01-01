@@ -26,7 +26,7 @@ def create_tracker(tracker_type, appearance_descriptor_weights, device, half):
     elif tracker_type == 'ocsort':
         ocsort = OCSort(
             det_thresh=0.05,
-            iou_threshold=0.2,
+            iou_threshold=0.1,
             use_byte=False 
         )
         return ocsort

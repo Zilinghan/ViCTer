@@ -408,8 +408,6 @@ if __name__ == '__main__':
     parser.add_argument('--yolo-weights', nargs='+', type=Path, default=WEIGHTS / 'yolov5n.pt', help='model.pt path(s)')
     parser.add_argument('--appearance-descriptor-weights', type=Path, default=WEIGHTS / 'osnet_x0_25_msmt17.pt')
     parser.add_argument('--tracking-method', type=str, default='strongsort', help='strongsort, ocsort')
-    # parser.add_argument('--yolo_model', nargs='+', type=str, default='yolov5n.pt', help='model.pt path(s)')
-    # parser.add_argument('--deep_sort_model', type=str, default='osnet_x1_0')
     parser.add_argument('--source', type=str, default='datasets/vct1/vct1.mp4', help='source')  # file/folder, 0 for webcam
     parser.add_argument('--output', type=str, default='inference/output', help='output folder')  # output folder
     parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[960], help='inference size h,w')
@@ -441,7 +439,7 @@ if __name__ == '__main__':
     save_dir = increment_path(Path(opt.project) / opt.name, exist_ok=opt.exist_ok)  # increment run
     save_dir.mkdir(parents=True, exist_ok=True)  
     # Result plot
-    ax = event_plot_setup(opt.source, opt.label_folder)
+    fig, ax = event_plot_setup(opt.source, opt.label_folder)
     # Train the face recoginition network first, since we use no_grad during the detection
     start = time_sync()
     # (1) For Test Speed:
@@ -449,10 +447,11 @@ if __name__ == '__main__':
     # fr_model = torch.load(opt.model_folder)
     # fr_model.classify = False
     # LabeledTrainSet = TrainingSetLabeled(opt.face_folder, transform=False)
-    # num_classes = LabeledTrainSet.get_num_classes()
-    # print(f"Number of classes is : {num_classes}")
     # LabeledTrainLoader = DataLoader(LabeledTrainSet, batch_size=8, shuffle=False)
-    # embedding_pool = EmbeddingPool(LabeledTrainLoader, fr_model, get_device(), threshold=1.1, threshold_high=1.35)
+    # UnlabeledTrainSet = TrainingSetUnlabeled(opt.source, "data", num_images=2048)
+    # UnlabeledTrainLoader = DataLoader(UnlabeledTrainSet, batch_size=8*10, shuffle=True)
+    # embedding_pool = EmbeddingPool(LabeledTrainLoader, UnlabeledTrainLoader, fr_model, get_device())
+    # num_classes = LabeledTrainSet.get_num_classes()
     # (2) For Real Case:
     # Train from the data
     fr_model, embedding_pool, num_classes = train(opt.source, opt.face_folder)
@@ -466,5 +465,6 @@ if __name__ == '__main__':
         detect_no_track(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
     end = time_sync()
     print(f"Total time for tracking and detection is: {end-start:.3f}s")
-    ax.figure.savefig(str(save_dir/'output.jpg'))
-    print(f"Time slots figure is saved to {str(save_dir/'output.jpg')}")
+    fig.tight_layout()
+    ax.figure.savefig(str(save_dir/'output.svg'))
+    print(f"Time slots figure is saved to {str(save_dir/'output.svg')}")

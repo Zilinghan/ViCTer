@@ -141,7 +141,7 @@ def event_plot_setup(video_path, label_path):
             start_t = printable_to_seconds(start)
             end_t = printable_to_seconds(end)
             ax.barh(y=idx*3, width=(end_t-start_t)*fps, left=start_t*fps, height=0.8, label='True', color=colors[idx], alpha=0.45)
-    return ax
+    return fig, ax
 
 def event_plot(ax, screentime, video_path, label_path, idx=1):
     def _format_convert(times, stride=1):

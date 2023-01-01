@@ -85,7 +85,7 @@ def evaluate_accuracy(net, test_iter, device):
            0, max_prob_lower_bound
 
 
-def train_SSL(model, labeled_trainloader, unlabeled_trainloader, num_epochs, num_iters, learning_rate, threshold=0.95):
+def train_SSL(model, labeled_trainloader, unlabeled_trainloader, num_epochs, num_iters, learning_rate, temp=1, threshold=0.95):
     # params_1x: parameters with 1x learning rates
     params_1x = [param for name, param in model.named_parameters() if name not in ["logits.weight", "logits.bias"]]
     grouped_parameters = [
@@ -134,7 +134,7 @@ def train_SSL(model, labeled_trainloader, unlabeled_trainloader, num_epochs, num
             Lx = F.cross_entropy(logits_x, targets_x, reduction='mean')
             
             # Semi-supervised loss
-            pseudo_label = torch.softmax(logits_u.detach(), dim=-1)
+            pseudo_label = torch.softmax(logits_u.detach()/temp, dim=-1)
             max_probs, targets_u = torch.max(pseudo_label, dim=-1)
             mask = max_probs.ge(threshold).float()
             
@@ -253,5 +253,5 @@ def train(source, face_folder):
     fr_model.classify = False
     LabeledTrainSet = TrainingSetLabeled(face_folder, transform=False)
     LabeledTrainLoader = DataLoader(LabeledTrainSet, batch_size=8, shuffle=False)
-    embedding_pool = EmbeddingPool(LabeledTrainLoader, fr_model, get_device(), threshold=0.8)
+    embedding_pool = EmbeddingPool(LabeledTrainLoader, UnlabeledTrainLoader, fr_model, get_device())
     return fr_model, embedding_pool, num_classes
