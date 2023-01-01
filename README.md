@@ -39,6 +39,14 @@ We have also provide codes for other experiments to evaluate the performance of 
 
 [Face Recognition Accuracy](/experiments/exp1.ipynb)
 
+<img src='experiments/results/accuracy.svg' width=600/>
+
 [Embedding Distances](/experiments/exp2.ipynb)
 
+<img src='experiments/results/embedding_dist.svg' width=600/>
+
 [Embedding Clustering](/experiments/exp3.ipynb)
+
+<img src='experiments/results/tsne.svg' width=600/>
+
+<img src='experiments/results/umap.svg' width=600/>
