@@ -43,6 +43,9 @@ filterpy
 # Tracking eval ----------------------------------
 GitPython
 
+# Download youtube video
+pytube
+
 # Export --------------------------------------
 #onnx>=1.9.0  # ONNX export
 #onnx-simplifier>=0.4.1  # ONNX simplifier
