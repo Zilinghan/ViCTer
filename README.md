@@ -13,7 +13,7 @@ pip install -r requirements.txt
 ```
 
 ## Download Dataset
-Download the dataset CIFV for running the experiment from the [IEEEDataport](https://ieee-dataport.org/documents/character-face-video), and put it under ViCTer/datasets in the following structure:
+Download the dataset CIFV for running the experiment from the [*IEEEDataport*](https://ieee-dataport.org/documents/character-face-video), and put it under ViCTer/datasets in the following structure:
 ```
 datasets
    |——————vct1
@@ -50,3 +50,11 @@ We have also provide codes for other experiments to evaluate the performance of 
 <img src='experiments/results/tsne.svg' width=600/>
 
 <img src='experiments/results/umap.svg' width=600/>
+
+Tracking Results
+
+<img src='experiments/results/output-v1.svg' width=600/>
+
+<img src='experiments/results/output-v2.svg' width=600/>
+
+<img src='experiments/results/output-v3.svg' width=600/>
