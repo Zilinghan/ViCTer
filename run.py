@@ -44,12 +44,6 @@ os.environ["OPENBLAS_NUM_THREADS"] = "1"
 os.environ["MKL_NUM_THREADS"] = "1"
 os.environ["VECLIB_MAXIMUM_THREADS"] = "1"
 os.environ["NUMEXPR_NUM_THREADS"] = "1"
-# Get the root folder path
-# ROOT = Path.cwd()
-# WEIGHTS = ROOT / 'weights'
-# if str(ROOT) not in sys.path:
-#     sys.path.append(str(ROOT))  # add ROOT to PATH
-# ROOT = Path(os.path.relpath(ROOT, Path.cwd()))  # relative
 
 # Colors for visualization
 np.random.seed(100)
@@ -129,8 +123,7 @@ def detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax):
         dt[0] += t2 - t1
 
         # Inference (YOLO): (t3-t2)
-        visualize = increment_path(save_dir / Path(path).stem, mkdir=True) if opt.visualize else False
-        pred = model(img, augment=opt.augment, visualize=visualize)
+        pred = model(img, augment=opt.augment)
         t3 = time_sync()
         dt[1] += t3 - t2
 
@@ -300,8 +293,6 @@ def detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax):
                             label = f'{person_idx} {names[c]} {conf:.2f}'
                             color_idx = person_idx * len(appear_dict[person_idx]) * 5 % len(COLORS_PEOPLE)
                             annotator.mask_label(bboxes, label, color=tuple(COLORS_PEOPLE[int(color_idx)]))
-            # else:
-            #     tracker.increment_ages()
 
             # If not tracked person, simply record the faces
             if no_track and face_bbox is not None and len(face_bbox):
@@ -339,10 +330,6 @@ def detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax):
             os.system('open ' + save_path)
     event_plot(ax, post_processing(appear_dict, face_time_slots, num_classes, max_new_coming), opt.source, opt.label_folder, idx=1)
     
-    # draw_screentimes(after_processing_2(appear_dict, face_time_slots, num_classes, max_new_coming), total_frames, save_dir, 'output.jpg')
-    # print('Plotted figure saved to %s' %str(save_dir/'output.jpg'))
-    # np.save(str(save_dir/'output.npy'), appear_dict)
-    # print('Appearance dict saved to %s' % str(save_dir/'output.npy'))
     
 def detect_no_track(opt, fr_model, embedding_pool, num_classes, save_dir, ax):
     '''
@@ -399,40 +386,31 @@ def detect_no_track(opt, fr_model, embedding_pool, num_classes, save_dir, ax):
         print(f'{s}Done.')
     event_plot(ax, post_processing({}, face_time_slots, num_classes, 0), opt.source, opt.label_folder, idx=2)
     
-    # draw_screentimes(after_processing_2({}, face_time_slots, num_classes, 0), total_frames, save_dir, 'output_notrack.jpg')
-    # print('Plotted figure saved to %s' %str(save_dir/'output_notrack.jpg'))
-    
     
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--yolo-weights', nargs='+', type=Path, default=WEIGHTS / 'yolov5n.pt', help='model.pt path(s)')
-    parser.add_argument('--appearance-descriptor-weights', type=Path, default=WEIGHTS / 'osnet_x0_25_msmt17.pt')
+    parser.add_argument('--source', type=str, default='datasets/vct2/vct2.mp4', help='source video to track')
+    parser.add_argument('--face-folder', default='datasets/vct2/face', help='folder of face images of characters to be tracked')
+    parser.add_argument('--model-path', default='model/vct2.pth', help='path to store the trained recognition model')
+    parser.add_argument('--label-folder', default='datasets/vct2/time_slot', help='folder containing the ground truth character appearing time slots')
     parser.add_argument('--tracking-method', type=str, default='strongsort', help='strongsort, ocsort')
-    parser.add_argument('--source', type=str, default='datasets/vct1/vct1.mp4', help='source')  # file/folder, 0 for webcam
-    parser.add_argument('--output', type=str, default='inference/output', help='output folder')  # output folder
+    parser.add_argument('--stride', type=int, default=4, help='detect the movie for every stride frame(s)')
+    parser.add_argument('--save-vid', action='store_true', help='save video tracking results')
+    parser.add_argument('--yolo-weights', nargs='+', type=Path, default=WEIGHTS / 'yolov5n.pt', help='path to yolo model')
+    parser.add_argument('--appearance-descriptor-weights', type=Path, default=WEIGHTS / 'osnet_x0_25_msmt17.pt', help='path to strongsort appearance descriptor model')
     parser.add_argument('--imgsz', '--img', '--img-size', nargs='+', type=int, default=[960], help='inference size h,w')
     parser.add_argument('--conf-thres', type=float, default=0.3, help='object confidence threshold')
     parser.add_argument('--iou-thres', type=float, default=0.5, help='IOU threshold for NMS')
-    parser.add_argument('--fourcc', type=str, default='mp4v', help='output video codec (verify ffmpeg support)')
-    parser.add_argument('--device', default='', help='cuda device, i.e. 0 or 0,1,2,3 or cpu')
-    parser.add_argument('--save-vid', action='store_true', help='save video tracking results')
     parser.add_argument('--classes', nargs='+', default=0, type=int, help='filter by class: --class 0, or --class 16 17') # class 0 is person, 1 is bycicle, 2 is car... 79 is oven
-    parser.add_argument('--batchsize', type=int, default=32, help='batch size')
+    parser.add_argument('--batchsize', type=int, default=32, help='batchsize for processing')
     parser.add_argument('--agnostic-nms', action='store_true', help='class-agnostic NMS')
     parser.add_argument('--augment', action='store_true', help='augmented inference')
-    parser.add_argument('--evaluate', action='store_true', help='augmented inference')
-    parser.add_argument("--config_deepsort", type=str, default="deep_sort/configs/deep_sort.yaml")
     parser.add_argument("--half", action="store_true", help="use FP16 half-precision inference")
-    parser.add_argument('--visualize', action='store_true', help='visualize features')
     parser.add_argument('--max-det', type=int, default=1000, help='maximum detection per image')
     parser.add_argument('--dnn', action='store_true', help='use OpenCV DNN for ONNX inference')
     parser.add_argument('--project', default=ROOT / 'runs/track', help='save results to project/name')
     parser.add_argument('--name', default='exp', help='save results to project/name')
-    parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')
-    parser.add_argument('--face-folder', default='datasets/vct1/face', help='folder of face images provided by users')
-    parser.add_argument('--stride', type=int, default=4, help='detect the movie for every stride frame(s)')
-    parser.add_argument('--model-folder', default='model/vct1.pth')
-    parser.add_argument('--label-folder', default='datasets/vct1/time_slot')
+    parser.add_argument('--exist-ok', action='store_true', help='existing project/name ok, do not increment')    
     opt = parser.parse_args()
     opt.imgsz *= 2 if len(opt.imgsz) == 1 else 1  # expand
     # Results saving directories
@@ -442,9 +420,9 @@ if __name__ == '__main__':
     fig, ax = event_plot_setup(opt.source, opt.label_folder)
     # Train the face recoginition network first, since we use no_grad during the detection
     start = time_sync()
-    # (1) For Test Speed:
+    # ------------------(1) For Test Speed: If you have saved model---------------------
     # Load the saved model
-    # fr_model = torch.load(opt.model_folder)
+    # fr_model = torch.load(opt.model_path)
     # fr_model.classify = False
     # LabeledTrainSet = TrainingSetLabeled(opt.face_folder, transform=False)
     # LabeledTrainLoader = DataLoader(LabeledTrainSet, batch_size=8, shuffle=False)
@@ -452,11 +430,11 @@ if __name__ == '__main__':
     # UnlabeledTrainLoader = DataLoader(UnlabeledTrainSet, batch_size=8*10, shuffle=True)
     # embedding_pool = EmbeddingPool(LabeledTrainLoader, UnlabeledTrainLoader, fr_model, get_device())
     # num_classes = LabeledTrainSet.get_num_classes()
-    # (2) For Real Case:
+    # ------------------(2) For Real Case: No saved model availabel---------------------
     # Train from the data
     fr_model, embedding_pool, num_classes = train(opt.source, opt.face_folder)
-    torch.save(fr_model, opt.model_folder)
-    print(f"The model is saved to {opt.model_folder}")
+    torch.save(fr_model, opt.model_path)
+    print(f"The model is saved to {opt.model_path}")
     end = time_sync()
     print(f"Total time for training is: {end-start:.3f}s")
     start = time_sync()
