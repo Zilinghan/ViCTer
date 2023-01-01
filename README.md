@@ -1,4 +1,5 @@
 # ViCTer: A Semi-supervised Video Character Tracker
+<img src='experiments/results/track-demo.gif' width=500>
 
 ## Introduction
 This repository contains the source code for the paper *ViCTer: A Semi-supervised Video Character Tracker*

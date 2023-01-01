@@ -68,14 +68,13 @@ def detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax):
     fr_model.classify = False # face recognition model only generates face embeddings
     appear_dict = {} # information dictionary for each tracked person, which contains the face index and corresponding time slots
     total_frames = 0
-    device = select_device(opt.device)
+    device = get_device()
     # Initialize face-detection model
     fd_model = MTCNN(margin = 0, min_face_size = 20, select_largest = False, keep_all = True, device = device)
     # Initialize deepsort
     tracker = create_tracker(tracking_method, appearance_descriptor_weights, device, half)
 
     # Load YoLo model for multi-human tracking
-    device = select_device(device)
     model = DetectMultiBackend(yolo_model, device=device, dnn=opt.dnn)
     stride, names, pt, jit, _ = model.stride, model.names, model.pt, model.jit, model.onnx
     imgsz = check_img_size(imgsz, s=stride)  # check image size
@@ -346,7 +345,7 @@ def detect_no_track(opt, fr_model, embedding_pool, num_classes, save_dir, ax):
     source, imgsz, half, project, name, exist_ok= opt.source, opt.imgsz, opt.half, opt.project, opt.name, opt.exist_ok
     fr_model.classify = False # face recognition model only generates face embeddings
     total_frames = 0
-    device = select_device(opt.device)
+    device = get_device()
     # Initialize face-detection model
     fd_model = MTCNN(margin = 0, min_face_size = 20, select_largest = False, keep_all = True, device = device)
     # Video dataloader: returned images are in RGB format
