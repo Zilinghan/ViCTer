@@ -35,7 +35,7 @@ from yolov5.utils.general import (check_img_size, non_max_suppression, xyxy2xywh
 from yolov5.utils.torch_utils import select_device, time_sync
 from recognition.train import train, get_device
 from recognition.dataset import TrainingSetLabeled, TrainingSetUnlabeled, face_extraction, recognize
-from recognition.draw import post_processing, event_plot, event_plot_setup, event_plot
+from recognition.draw import post_processing, event_plot, event_plot_setup
 from recognition.embedding import EmbeddingPool
 warnings.filterwarnings('ignore')
 # Limit the number of cpus used by high performance libraries

@@ -7,6 +7,16 @@ from pathlib import Path
 from matplotlib import pyplot as plt
 
 def post_processing(data, data_add, n_people, max_new_coming):
+    '''
+        post process the data from the victer model
+        Inputs:
+            data - appearing dictionary
+            data_add - appearing dictionary for unrelated faces (face not associated with any person track)
+            n_people - number of characters of interest
+            max_new_coming - (l_max) number of new coming faces to create a new face instance for a person track
+        Output:
+            res - A dictionary: appearing frames for each character of interest
+    '''
     res = {}
     for i in range(n_people):
         res[i] = set()
@@ -17,9 +27,7 @@ def post_processing(data, data_add, n_people, max_new_coming):
 
     for person in data:
         person_obj = data[person]
-        for idx, face in enumerate(person_obj):
-#             if idx == 0:
-#                 continue
+        for face in person_obj:
             face_obj = person_obj[face]
             for t in face_obj['frame_idx']:
                 if not face_obj['face_class'] is None:
@@ -35,62 +43,20 @@ def post_processing(data, data_add, n_people, max_new_coming):
         res[i].sort()
     return res            
 
-def draw_figure(ax, recording_list, y, total_frame):
-    no_color = 'white'
-    yes_color = 'black'
-    for i in range(total_frame):
-        if i in recording_list:
-            ax.barh(y=y, width=1, left=i, height=0.5, label='True', color=yes_color)
-        else:
-            ax.barh(y=y, width=1, left=i, height=0.5, label='False', color=no_color)
-    return
-
-def draw_figure_2(ax, recording_list, y, total_frame):
-    no_color = 'white'
-    yes_color = 'black'
-    show_flag = False
-    has_draw = True
-    draw_begin = 0
-    last_item = None
-    for i in recording_list:
-        if not show_flag:
-            ax.barh(y=y, width=i-draw_begin, left=draw_begin, height=0.5, label='False', color=no_color)
-            show_flag = True
-            draw_begin = i
-            last_item = i
-        else:
-            if i != last_item + 1:
-                ax.barh(y=y, width=last_item+1-draw_begin, left=draw_begin, height=0.5, label='True', color=yes_color)
-                ax.barh(y=y, width=i-(last_item)+1, left=last_item+1, height=0.5, label='False', color=no_color)
-                show_flag = True
-                draw_begin = i
-                last_item = i
-            else:
-                last_item = i
-        ax.barh(y=y, width=last_item+1-draw_begin, left=draw_begin, height=0.5, label='True', color=yes_color)
-    return
-
-def draw_screentimes(data, total_frame, output_dir):
-    output_dir = Path(output_dir)
-    # create the canvas
-    fig, ax = plt.subplots(figsize=(10,len(data)))
-    ax.xaxis.set_visible(True)
-    ax.yaxis.set_visible(True)
-    ax.set_xlim(0, total_frame)
-    
-    for i in data:
-        draw_figure_2(ax, data[i], i, total_frame)
-
-    plt.savefig(str(output_dir/'output.jpg'))
-
 def get_video_length(video_path):
+    '''
+        return the length of given video `video_path` in second
+    '''
     cap = cv2.VideoCapture(video_path)
     if cap.isOpened():
-        return cap.get(7)/cap.get(5)
+        return cap.get(7)/cap.get(5) # total frame / frame rate
     return -1
 
-def get_csv_files(filePath):
-    all_files = os.listdir(filePath)
+def get_csv_files(csv_folder):
+    '''
+        return all the csv files in a given folder
+    '''
+    all_files = os.listdir(csv_folder)
     csv_files = []
     for file in all_files:
         if file[-3:] == 'csv':
@@ -99,43 +65,39 @@ def get_csv_files(filePath):
     return csv_files
 
 def printable_to_seconds(t):
+    '''
+        change the printable time format to seconds
+    '''
     hh, mm, ss, ms = [int(i) for i in t.split(':')]
     return hh*3600+mm*60+ss+(ms/(100.0))
 
-def read_labels(csv_path, total_sec):
-    fig, ax = plt.subplots(figsize=(10,2))
-    no_color, yes_color = 'white', 'black'
-    df = pd.read_csv(csv_path)
-    row, col = df.shape
-    for i in range(row):
-        start, end = df.iloc[i, 0], df.iloc[i, 1]
-        start_t = printable_to_seconds(start)
-        end_t = printable_to_seconds(end)
-        ax.xaxis.set_visible(True)
-        ax.yaxis.set_visible(True)
-        ax.set_xlim(0, total_sec)
-        ax.barh(y=0, width=end_t-start_t, left=start_t, height=0.5, label='True', color=yes_color)
-
 def event_plot_setup(video_path, label_path):
+    '''
+        setup the event plot for the video character tracking experiment
+        Inputs:
+            video_path - path to the given video
+            label_path - path of the folder containing the ground-truth appearing time_slots
+    '''
+    # obatin the length of the video
     cap = cv2.VideoCapture(video_path)
     if cap.isOpened():
         fps, total_frames = cap.get(5), cap.get(7)
     else:
-        print("Not opened")
+        print("The video is not opened!")
         return 
     cap.release()
     # Read the labels
     csv_files = get_csv_files(label_path)
     # Plot configurations
     fig, ax = plt.subplots(figsize=(18, 0.3*len(csv_files)*3))
-    ax.xaxis.set_visible(False)
+    ax.xaxis.set_visible(False) # hide axes
     ax.yaxis.set_visible(False)
     ax.set_xlim(0, total_frames)
-    colors = ['deepskyblue', 'violet', 'limegreen', 'tomato', 'gold', 'pink']
+    colors = ['deepskyblue', 'violet', 'limegreen', 'tomato', 'gold', 'pink'] # base color for different characters (add more if having more than 6 characters of interest)
     # Plot the ground truth (labels)
     for idx, file in enumerate(csv_files):
         df = pd.read_csv(os.path.join(label_path, file))
-        row, col = df.shape
+        row, _ = df.shape
         for i in range(row):
             start, end = df.iloc[i, 0], df.iloc[i, 1]
             start_t = printable_to_seconds(start)
@@ -144,7 +106,19 @@ def event_plot_setup(video_path, label_path):
     return fig, ax
 
 def event_plot(ax, screentime, video_path, label_path, idx=1):
+    '''
+        Finish the event plot for the experimental data
+        Inputs:
+            ax - plot ax returned from `event_plot_setup`
+            screetime - A dictionary: appearing time slots (in sorted frame indices) for different characters of interest
+            video_path - path to the given video
+            label_path - path of the folder containing the ground-truth appearing time_slots
+            idx - column index of this event plot strip
+    '''
     def _format_convert(times, stride=1):
+        '''
+            convert the frame indices into a list of (start, end) time periods
+        '''
         ret = []
         start = times[0]
         end = times[0]
