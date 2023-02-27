@@ -136,8 +136,8 @@ def event_plot(ax, screentime, video_path, label_path, idx=1):
             ax.barh(y=y, width=end-start, left=start, height=0.8, color=color, alpha=0.65+(idx-1)*0.2)
         return 
     def _compute_iou(l1, l2, total_frames, fps):
-        t1 = [False for _ in range(int(total_frames)+10)]
-        t2 = [False for _ in range(int(total_frames)+10)]
+        t1 = [False for _ in range(int(total_frames*1.1))] # add a safe margin
+        t2 = [False for _ in range(int(total_frames*1.1))] # add a safe margin
         for start, end in l1:
             for i in range(int(start), int(end+1)):
                 t1[i] = True

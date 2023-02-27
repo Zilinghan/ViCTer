@@ -10,6 +10,8 @@ Video character tracking problem refers to tracking certain characters of intere
 ```
 git clone --recurse-submodules https://github.com/Zilinghan/ViCTer
 cd ViCTer
+conda create -n victer python=3.8
+conda activate victer
 pip install -r requirements.txt
 ```
 
@@ -22,7 +24,7 @@ datasets
    └——————...
    └——————vct10.zip
 ```
-Then go to the `datasets` folder and run the given script to unzip and download videos.
+Then go to the `datasets` folder and run the given script to unzip files and download videos.
 ```
 cd datasets
 chmod +x data.sh
@@ -30,6 +32,7 @@ chmod +x data.sh
 ```
 
 ## Tracking
+Note: For getting the tracking accuracy on different videos, replace `vct2` below to corresponding `vctx`.
 ```
 python run.py --source datasets/vct2/vct2.mp4           # source video to track
               --face-folder datasets/vct2/face          # folder of face images of characters to be tracked
