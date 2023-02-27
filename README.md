@@ -14,15 +14,20 @@ pip install -r requirements.txt
 ```
 
 ## Download Dataset
-Download the dataset CIFV for running the experiment from the [*IEEEDataport*](https://ieee-dataport.org/documents/character-face-video), and put it under ViCTer/datasets in the following structure:
+Download the dataset CIFV for running the experiment from the [*IEEEDataport*](https://ieee-dataport.org/documents/character-face-video), and put it under `datasets` in the following structure:
 ```
 datasets
-   |——————vct1
-   └——————vct2
+   |——————vct1.zip
+   └——————vct2.zip
    └——————...
-   └——————vct10
+   └——————vct10.zip
 ```
-Then go to each ```vctX``` folder and run ```python youtube_download.py``` to download the video from Youtube.
+Then go to the `datasets` folder and run the given script to unzip and download videos.
+```
+cd datasets
+chmod +x data.sh
+./data.sh
+```
 
 ## Tracking
 ```

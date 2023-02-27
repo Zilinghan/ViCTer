@@ -1,4 +1,4 @@
-# pip install -r requirements.txt
+# # pip install -r requirements.txt
 
 # base ----------------------------------------
 matplotlib>=3.5.0
@@ -12,19 +12,19 @@ torch>=1.7.0
 torchvision>=0.8.1
 tqdm>=4.64.0
 protobuf<=3.20.1
+facenet-pytorch==2.5.2
+scikit-image==0.17.2
+scikit-learn==0.24.2
 
 # plotting ------------------------------------
-
 pandas>=1.1.4
 seaborn>=0.11.0
 umap-learn
 
 # deep_sort -----------------------------------
-
 easydict
 
 # torchreid -----------------------------------
-
 Cython
 h5py
 six
@@ -40,16 +40,9 @@ imageio
 # ocsort
 filterpy
 
-# Tracking eval ----------------------------------
+# Tracking eval -------------------------------
 GitPython
 
-# Download youtube video
+# Download youtube video ----------------------
 pytube
 
-# Export --------------------------------------
-#onnx>=1.9.0  # ONNX export
-#onnx-simplifier>=0.4.1  # ONNX simplifier
-#tensorflow>=2.4.1  # TFLite export (or tensorflow-cpu, tensorflow-aarch64)
-#openvino-dev==2022.2.0.dev20220829  # OpenVINO export for dynamic models, errors with 2022.1.0 version
-#git+https://github.com/PINTO0309/openvino2tensorflow #OpenVINO to TFLite export
-#nvidia-tensorrt
