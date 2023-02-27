@@ -84,7 +84,7 @@ def event_plot_setup(video_path, label_path):
         fps, total_frames = cap.get(5), cap.get(7)
     else:
         print("The video is not opened!")
-        return 
+        exit() 
     cap.release()
     # Read the labels
     csv_files = get_csv_files(label_path)
@@ -162,8 +162,8 @@ def event_plot(ax, screentime, video_path, label_path, idx=1):
     if cap.isOpened():
         fps, total_frames = cap.get(5), cap.get(7)
     else:
-        print("Not opened")
-        return 
+        print("The video is not opened")
+        exit() 
     cap.release()
     # Read the labels
     csv_files = get_csv_files(label_path)
@@ -178,4 +178,4 @@ def event_plot(ax, screentime, video_path, label_path, idx=1):
         intersection_count += intersection
         union_count += union
     print(f"Average IoU is {intersection_count/union_count}")
-    print("IoUs are: ", ious)
+    print("IoUs for different characters are: ", ious)
