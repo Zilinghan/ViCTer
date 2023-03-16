@@ -2,3 +2,4 @@ data
 .DS_Store
 *.zip
 *.mp4
+run.sh

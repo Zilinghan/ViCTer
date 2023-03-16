@@ -1,1 +1,1 @@
-from .detection import detect, detect_no_track
+from .detection import detect, detect_no_track, detect_optical_flow

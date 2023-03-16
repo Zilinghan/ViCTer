@@ -1,6 +1,8 @@
 # ViCTer: A Semi-supervised Video Character Tracker
 <img src='experiments/results/track-demo.gif' width=500>
 
+<span style="color:red">[News]:</span> We have now have improved version of ViCTer which integrates optical flow to the model for a much better performance. More information will come sooner.
+
 ## Introduction
 This repository contains the source code for the paper *ViCTer: A Semi-supervised Video Character Tracker*
 

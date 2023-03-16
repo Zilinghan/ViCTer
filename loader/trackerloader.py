@@ -3,11 +3,14 @@ from trackers.strong_sort.strong_sort import StrongSORT
 from trackers.ocsort.ocsort import OCSort
 
 
-def create_tracker(tracker_type, appearance_descriptor_weights, device, half):
+def create_tracker(tracker_type, appearance_descriptor_weights, device, half, optical_flow=False):
     if tracker_type == 'strongsort':
         # initialize StrongSORT
         cfg = get_config()
-        cfg.merge_from_file('loader/strongsort_config/strong_sort.yaml')
+        if optical_flow:
+            cfg.merge_from_file('loader/strongsort_config/strong_sort.yaml')
+        else:
+            cfg.merge_from_file('loader/strongsort_config/strong_sort_victer.yaml')
 
         strongsort = StrongSORT(
             appearance_descriptor_weights,
@@ -24,11 +27,18 @@ def create_tracker(tracker_type, appearance_descriptor_weights, device, half):
         )
         return strongsort
     elif tracker_type == 'ocsort':
-        ocsort = OCSort(
-            det_thresh=0.05,
-            iou_threshold=0.1,
-            use_byte=False 
-        )
+        if optical_flow:
+            ocsort = OCSort(
+                det_thresh=0.45,
+                iou_threshold=0.2,
+                use_byte=False 
+            )
+        else:
+            ocsort = OCSort(
+                det_thresh=0.05,
+                iou_threshold=0.1,
+                use_byte=False 
+            )
         return ocsort
     else:
         print('No such tracker')

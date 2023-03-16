@@ -29,7 +29,7 @@ from recognition.train import train, get_device
 from recognition.dataset import TrainingSetLabeled, TrainingSetUnlabeled
 from recognition.draw import event_plot_setup
 from recognition.embedding import EmbeddingPool
-from detection import detect, detect_no_track
+from detection import detect, detect_no_track, detect_optical_flow
 warnings.filterwarnings('ignore')
 # Limit the number of cpus used by high performance libraries
 os.environ["OMP_NUM_THREADS"] = "1"
@@ -41,10 +41,10 @@ print("Module Imported Successfully!")
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--source', type=str, default='datasets/vct2/vct2.mp4', help='path to source video to track')
-    parser.add_argument('--face-folder', default='datasets/vct2/face', help='folder of face images of characters to be tracked')
-    parser.add_argument('--label-folder', default='datasets/vct2/time_slot', help='folder containing the ground truth character appearing time slots')
-    parser.add_argument('--model-path', default='model/vct2.pth', help='path to store the trained recognition model/path of stored trained model')
+    parser.add_argument('--source', type=str, default='datasets/vct5/vct5.mp4', help='path to source video to track')
+    parser.add_argument('--face-folder', default='datasets/vct5/face', help='folder of face images of characters to be tracked')
+    parser.add_argument('--label-folder', default='datasets/vct5/time_slot', help='folder containing the ground truth character appearing time slots')
+    parser.add_argument('--model-path', default='model/vct5.pth', help='path to store the trained recognition model/path of stored trained model')
     parser.add_argument('--tracking-method', type=str, default='strongsort', help='strongsort, ocsort')
     parser.add_argument('--stride', type=int, default=4, help='process the video for every stride frame(s)')
     parser.add_argument('--batchsize', type=int, default=32, help='batchsize for processing')
@@ -66,6 +66,8 @@ if __name__ == '__main__':
     parser.add_argument('--no-training', action='store_true', help='EXPERIMENT ONLY: enable it if you have a trained recognition model and want to use the trained model for face recogniton')
     parser.add_argument('--train-only', action='store_true', help='EXPERIMENT ONLY: enable it if you only want to train a face recognition model without tracking')
     parser.add_argument('--run-comparison', action='store_true', help='Run both the face recognition model only method, and victer tracking method')
+    parser.add_argument('--optical-flow', action='store_true', help='run the improved tracker with optical flow scene detection')
+    
     opt = parser.parse_args()
     opt.imgsz *= 2 if len(opt.imgsz) == 1 else 1  # expand
 
@@ -101,10 +103,15 @@ if __name__ == '__main__':
             if opt.run_comparison:
                 detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
                 detect_no_track(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
+            elif opt.optical_flow:
+                detect_optical_flow(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
             elif opt.face_rec_only:
                 detect_no_track(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
             else:
+                print("=========VICTER=========")
                 detect(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
+                print("=========VICTER + Optical Flow============")
+                detect_optical_flow(opt, fr_model, embedding_pool, num_classes, save_dir, ax)
         end = time_sync()
         print(f"Total time for tracking and detection is {end-start:.3f}s")
 

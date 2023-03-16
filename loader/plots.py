@@ -149,8 +149,11 @@ class Annotator:
 
     def text(self, xy, text, txt_color=(255, 255, 255)):
         # Add text to image (PIL-only)
-        w, h = self.font.getsize(text)  # text width, height
-        self.draw.text((xy[0], xy[1] - h + 1), text, fill=txt_color, font=self.font)
+        if self.pil:
+            w, h = self.font.getsize(text)  # text width, height
+            self.draw.text((xy[0], xy[1] - h + 1), text, fill=txt_color)
+        else:
+            cv2.putText(self.im, f'Scene change detected', (xy[0], xy[1]), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 0, 255), 2)
 
     def result(self):
         # Return annotated image as array
