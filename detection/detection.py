@@ -356,7 +356,7 @@ def detect_optical_flow(opt, fr_model, embedding_pool, num_classes, save_dir, ax
     # Optical flow
     prev_frame = None
     prev_pts = None
-    flow = cv2.FarnebackOpticalFlow_create()
+    flow = cv2.FarnebackOpticalFlow_create(numIters=opt.of_num_iters, winSize=opt.of_winsize)
 
     # Process each frame batch of the video
     for frame_idx, (path, img, vid_cap, s) in enumerate(dataset):
@@ -405,8 +405,10 @@ def detect_optical_flow(opt, fr_model, embedding_pool, num_classes, save_dir, ax
                 annotator = Annotator(im0, line_width=1, pil=not ascii)
             
             # +++++++++++++++++Optical Flow+++++++++++++++++++
-            # Convert the frame to grayscale
+            # Convert the frame to grayscale and resize it
+            NEW_SIZE = (450, 270) # resize to a smaller size to speed things up
             gray_frame = cv2.cvtColor(im0, cv2.COLOR_BGR2GRAY)
+            gray_frame = cv2.resize(gray_frame, NEW_SIZE)
             # Calculate optical flow between the current frame and the previous frame
             if prev_frame is not None:
                 flow_vectors = flow.calc(prev_frame, gray_frame, prev_pts)

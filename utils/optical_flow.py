@@ -13,7 +13,7 @@ args = parser.parse_args()
 cap = cv2.VideoCapture(args.video_path)
 
 # resize the image
-NEW_SIZE = (640, 360)
+NEW_SIZE = (400, 240)
 # Define threshold value for scene change detection
 THRESHOLD = 8
 # Initialize variables
@@ -22,7 +22,7 @@ prev_pts = None
 frame_count = 0
 
 # Create a Farneback optical flow object
-flow = cv2.FarnebackOpticalFlow_create()
+flow = cv2.FarnebackOpticalFlow_create(numIters=3, winSize=3)
 
 # Loop through all the frames in the video
 while True:

@@ -67,7 +67,10 @@ if __name__ == '__main__':
     parser.add_argument('--train-only', action='store_true', help='EXPERIMENT ONLY: enable it if you only want to train a face recognition model without tracking')
     parser.add_argument('--run-comparison', action='store_true', help='Run both the face recognition model only method, and victer tracking method')
     parser.add_argument('--optical-flow', action='store_true', help='run the improved tracker with optical flow scene detection')
-    
+    parser.add_argument('--of-num-iters', type=int, default=1, help='number of iterations for optical flow algorithm')
+    parser.add_argument('--of-winsize', type=int, default=3, help='window size for optical flow algorithm')
+
+
     opt = parser.parse_args()
     opt.imgsz *= 2 if len(opt.imgsz) == 1 else 1  # expand
 
