@@ -3,6 +3,8 @@
 
 <span style="color:red">[News]:</span> We have now have improved version of ViCTer which integrates optical flow to the model for a much better performance. More information will come sooner.
 
+<span style="color:red">[News]:</span> The paper *ViCTer: A Semi-supervised Video Character Tracker* is accepted by Journal *Machine Learning with Applications*, and is open-access online [here](https://doi.org/10.1016/j.mlwa.2023.100460).
+
 ## Introduction
 This repository contains the source code for the paper *ViCTer: A Semi-supervised Video Character Tracker*
 
