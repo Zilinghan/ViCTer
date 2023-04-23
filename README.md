@@ -71,3 +71,16 @@ Tracking Results
 <img src='experiments/results/output-v2.svg' width=600/>
 
 <img src='experiments/results/output-v3.svg' width=600/>
+
+## Citing ViCTer
+```
+@article{li2023victer,
+  title={ViCTer: A semi-supervised video character tracker},
+  author={Li, Zilinghan and Wang, Xiwei and Zhang, Zhenning and Kindratenko, Volodymyr},
+  journal={Machine Learning with Applications},
+  volume={12},
+  pages={100460},
+  year={2023},
+  publisher={Elsevier}
+}
+```
