@@ -3,3 +3,5 @@ data
 *.zip
 *.mp4
 run.sh
+datasets/vct*
+experiments/results/raw

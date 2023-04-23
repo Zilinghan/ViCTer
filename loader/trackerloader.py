@@ -27,18 +27,11 @@ def create_tracker(tracker_type, appearance_descriptor_weights, device, half, op
         )
         return strongsort
     elif tracker_type == 'ocsort':
-        if optical_flow:
-            ocsort = OCSort(
-                det_thresh=0.45,
-                iou_threshold=0.2,
-                use_byte=False 
-            )
-        else:
-            ocsort = OCSort(
-                det_thresh=0.05,
-                iou_threshold=0.1,
-                use_byte=False 
-            )
+        ocsort = OCSort(
+            det_thresh=0.05,
+            iou_threshold=0.1,
+            use_byte=False 
+        )
         return ocsort
     else:
         print('No such tracker')
